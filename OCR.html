@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <script src="assets/js/min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="And Host - Domain Hosting HTML Template">
+    <meta name="keywords" content="hosting, domain, ssl, Hosting, Domain, business, .com, .net, .org, corporate">
+    <meta name="author" content="webguru071">
+
+    <meta property="og:type" content="Web Template">
+    <meta property="og:title" content="And Host - Domain Hosting HTML Template">
+    <meta property="og:description" content="And Host - Domain Hosting HTML Template">
+    <meta property="og:image" content="assets/img/preview.jpg">
+
+    <meta name="twitter:card" content="And Host - Domain Hosting HTML Template">
+    <meta name="twitter:title" content="And Host - Domain Hosting HTML Template">
+    <meta name="twitter:description" content="And Host - Domain Hosting HTML Template">
+    <meta name="twitter:image" content="assets/img/preview.jpg">
+
+    <meta name="msapplication-TileImage" content="assets/img/preview.jpg">
+
+    <meta name="msapplication-TileColor" content="#4da2ef">
+    <meta name="theme-color" content="#0a8aff">
+
+    <title>Text Recognition</title>
+
+    <!--=======================================
+      All Css Style link
+    ===========================================-->
+
+    <!-- Custom styles for this template -->
+    <link href="assets/css/style.css" rel="stylesheet">
+
+</head>
+
+<body id="page-top" class="home-1">
+
+<!-- Pre Loader Area start -->
+<div id="preloader">
+    <div class="loader"></div>
+</div>
+<!-- Pre Loader Area End -->
+
+<script type="text/javascript">
+	function loadImage() {
+		const image = document.getElementById("sourceImage");
+		const imageFile = document.getElementById("file-selector").files[0];
+		const imageUrl = URL.createObjectURL(imageFile);
+		image.src = imageUrl;
+
+		const reader = new FileReader();
+		reader.addEventListener("loadend", (event) => {
+			processImage(event.target.result);
+		});
+		reader.readAsArrayBuffer(imageFile);
+	}
+	
+    function processImage(imageData) {
+        // **********************************************
+        // *** Update or verify the following values. ***
+        // **********************************************
+
+        let subscriptionKey = document.getElementById("key").value;
+        let endpoint = document.getElementById("endpoint").value;
+        if (!subscriptionKey) { throw new Error('Please enter your subscription key and endpoint.'); }
+        
+        var uriBase = endpoint + "/vision/v3.1/read/analyze";
+
+        // Display the image.
+        //var sourceImageUrl = document.getElementById("inputImage").value;
+        //document.querySelector("#sourceImage").src = sourceImageUrl;
+
+
+        // This operation requires two REST API calls. One to submit the image
+        // for processing, the other to retrieve the text found in the image.
+        //
+        // Make the first REST API call to submit the image for processing.
+        $.ajax({
+            url: uriBase,
+
+            // Request headers.
+            beforeSend: function(jqXHR){
+                jqXHR.setRequestHeader("Content-Type","application/octet-stream");
+                jqXHR.setRequestHeader("Ocp-Apim-Subscription-Key", subscriptionKey);
+            },
+
+            type: "POST",
+
+            // Request body.
+            data: imageData,
+			
+			processData: false
+        })
+
+        .done(function(data, textStatus, jqXHR) {
+            // Show progress.
+            $("#responseTextArea").val("Text submitted. " +
+                "Waiting 10 seconds to retrieve the recognized text.");
+
+            // Note: The response may not be immediately available. Text
+            // recognition is an asynchronous operation that can take a variable
+            // amount of time depending on the length of the text you want to
+            // recognize. You may need to wait or retry the GET operation.
+            //
+            // Wait ten seconds before making the second REST API call.
+            setTimeout(function () {
+                // "Operation-Location" in the response contains the URI
+                // to retrieve the recognized text.
+                var operationLocation = jqXHR.getResponseHeader("Operation-Location");
+
+                // Make the second REST API call and get the response.
+                $.ajax({
+                    url: operationLocation,
+
+                    // Request headers.
+                    beforeSend: function(jqXHR){
+                        jqXHR.setRequestHeader("Content-Type","application/json");
+                        jqXHR.setRequestHeader(
+                            "Ocp-Apim-Subscription-Key", subscriptionKey);
+                    },
+
+                    type: "GET",
+                })
+
+                .done(function(data) {
+                    // Show formatted JSON on webpage.
+                    $("#responseTextArea").val(JSON.stringify(data, null, 2));
+                })
+
+                .fail(function(jqXHR, textStatus, errorThrown) {
+                    // Display error message.
+                    var errorString = (errorThrown === "") ? "Error. " :
+                        errorThrown + " (" + jqXHR.status + "): ";
+                    errorString += (jqXHR.responseText === "") ? "" :
+                        (jQuery.parseJSON(jqXHR.responseText).message) ?
+                            jQuery.parseJSON(jqXHR.responseText).message :
+                            jQuery.parseJSON(jqXHR.responseText).error.message;
+                    alert(errorString);
+                });
+            }, 10000);
+        })
+
+        .fail(function(jqXHR, textStatus, errorThrown) {
+            // Put the JSON description into the text area.
+            $("#responseTextArea").val(JSON.stringify(jqXHR, null, 2));
+
+            // Display error message.
+            var errorString = (errorThrown === "") ? "Error. " :
+                errorThrown + " (" + jqXHR.status + "): ";
+            errorString += (jqXHR.responseText === "") ? "" :
+                (jQuery.parseJSON(jqXHR.responseText).message) ?
+                    jQuery.parseJSON(jqXHR.responseText).message :
+                    jQuery.parseJSON(jqXHR.responseText).error.message;
+            alert(errorString);
+        });
+    };
+</script>
+
+<!--Main Menu/ Mobile Menu Section-->
+<section class="menu-section-area">
+
+    <!-- Top Menu -->
+    <div class="top-nav">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-8">
+                    <ul class="left-top-menu">
+                        <li><a href="contact.html"><i class="far fa-comment"></i>Live Chat</a></li>
+                        <li><a href="tel:880123564"><i class="fas fa-phone-alt"></i>+88 01 23 564</a></li>
+                    </ul>
+                </div>
+                <div class="col-sm-4">
+                    <ul class="right-top-menu text-right">
+                        <li><a href="login.html">Login</a></li>
+                        <li><a href="registration.html">Register</a></li>
+                        <li><a href="contact.html">Help</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Top Menu -->
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top d-none d-sm-none d-md-block d-lg-block d-xl-block" id="mainNav">
+        <div class="container">
+            <a class="navbar-brand" href="index.html"><img src="assets/img/logo.png" alt="AndtHost" class="img-fluid"></a>
+            <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav text-capitalize ml-auto">
+                    <li class="nav-item dropdown-box">
+                        <a class="nav-link js-scroll-trigger" href="#home">Home<i class="fas fa-angle-down"></i></a>
+                        <ul class="dropdown-list">
+                            <li><a href="index.html">Home Default</a></li>
+                            <li><a href="home-2.html">Home Style 2</a></li>
+                            <li><a href="home-3.html">Home Style 3</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown-box">
+                        <a class="nav-link" href="#">Domain<i class="fas fa-angle-down"></i></a>
+                        <ul class="dropdown-list">
+                            <li><a href="domain.html">Register a Domain</a></li>
+                            <li><a href="domain.html">Domain Name Search</a></li>
+                            <li><a href="domain.html">Domain Transfer</a></li>
+                            <li><a href="domain.html">Personal Domain</a></li>
+                            <li><a href="domain.html">FreeDNS</a></li>
+                            <li><a href="domain.html">PremiumDNS</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown-box">
+                        <a class="nav-link" href="#">Hosting<i class="fas fa-angle-down"></i></a>
+                        <ul class="dropdown-list">
+                            <li><a href="hosting.html">Shared Hosting</a></li>
+                            <li><a href="hosting.html">Dedicated Servers</a></li>
+                            <li><a href="hosting.html">Reseller Hosting</a></li>
+                            <li><a href="hosting.html">Cloud Servers</a></li>
+                            <li><a href="hosting.html">Data Migration</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown-box">
+                        <a class="nav-link" href="#">Services<i class="fas fa-angle-down"></i></a>
+                        <ul class="dropdown-list">
+                            <li><a href="services.html">Grid Services</a></li>
+                            <li><a href="services-classic.html">Classic Services</a></li>
+                            <li><a href="single-service.html">Service Details</a></li>
+                            <li><a href="single-service-2.html">Service Details 2</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown-box">
+                        <a class="nav-link" href="#">Pages<i class="fas fa-angle-down"></i></a>
+                        <ul class="dropdown-list">
+                            <li><a href="about.html">About</a></li>
+                            <li><a href="pricing-table.html">Pricing Table</a></li>
+                            <li><a href="login.html">Login</a></li>
+                            <li><a href="registration.html">Registration</a></li>
+                            <li><a href="faq.html">FAQ Page</a></li>
+                            <li><a href="404.html">404 Page</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown-box">
+                        <a class="nav-link" href="#">Blog<i class="fas fa-angle-down"></i></a>
+                        <ul class="dropdown-list">
+                            <li><a href="blog-grid.html">Blog Grid</a></li>
+                            <li><a href="blog-classic.html">Blog Classic</a></li>
+                            <li><a href="single-blog.html">Blog Single</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contact.html">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- Navigation -->
+</section>
+<!--Main Menu/ Mobile Menu Section-->
+
+<!-- Header Start -->
+<header class="page-banner-area position-relative" id="home">
+    <div class="section-overlay d-flex">
+        <div class="container">
+            <div class="header-caption">
+                <h1 class="header-caption-heading text-capitalize">OCR</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item text-capitalize"><a href="index.html">Home</a></li>
+                        <li class="breadcrumb-item active text-capitalize" aria-current="page"><i class="fas fa-angle-right"></i>OCR</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Effect Start-->
+    <img class="bubble slow" src="assets/img/all-effect-img/Top_bubble.svg" id="pink-side-bubble-1" alt="b">
+    <img class="bubble" src="assets/img/all-effect-img/Bottom_Bubble.svg" id="pink-side-bubble-2" alt="b">
+    <img class="bubble slow" src="assets/img/all-effect-img/Bog-Blob.svg" id="blue-side-bubble-1" alt="b">
+    <!-- Effect End-->
+
+    <!-- Wave Effect Start-->
+    <div class="footer-wave"></div>
+    <!-- Wave Effect End-->
+
+</header>
+<!-- Header End -->
+
+<!-- Our Features Area Start -->
+<section id="features" class="features-area service-page-features bg-white">
+
+    <div class="bubble-box">
+        <div class="bubbles-1"></div>
+        <div class="bubbles-2"></div>
+        <div class="bubbles-3"></div>
+        <div class="bubbles-4"></div>
+        <div class="bubbles-5"></div>
+        <div class="bubbles-7"></div>
+    </div>
+
+    <div class="container">
+
+        <div class="row">
+            <div class="col-12">
+                <div class="section-title-area">
+                    <h2 class="section-heading">Read text from image<span class="d-block"></span></h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- All Features Wrapper-->
+        <div>
+            <input style="display:none;" type="text" name="endpoint" id="endpoint" value="https://azragicv1.cognitiveservices.azure.com/" style="width: 300px;"/> 
+            <input style="display:none;" type="text" name="key" id="key" value="2e4855979d57424397aedcf4efe6d609" style="width: 300px;"/>
+        </div>
+       <div class="row all-features-wrapper">
+
+        <div class="col-12 col-sm-12 col-md-4" style="visibility:hidden">
+        </div>
+            <!--Single Feature box Start-->
+        <div class="col-12 col-sm-12 col-md-4">
+                <div class="single-features wow fadeInUp" data-wow-duration="1.0s" data-wow-delay=".4s">
+                    <div class="icon-wave-bg">
+                        <img src="assets/img/home-2-service-img/2.svg" alt="Features">
+                    </div>
+                    <div class="single-feature-content">
+                        <h4>Read image:</h4>
+                            <label for="file-selector" style="font-size:20px">Click me to Choose Files</label>
+                            <input style="display:none" class="button" type="file" id="file-selector" onchange="loadImage()">
+                    </div>
+                </div>
+            </div>
+            <!--Single Feature box End-->
+
+        </div>
+        <!-- All Features Wrapper-->
+    </div>
+
+</section>
+<!-- Our Features Area End -->
+
+<!-- Our Services Area Start -->
+<section id="pricing" class="service-page-pricing-table-area different-bg">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-12">
+                <div class="section-title-area">
+                    <h2 class="section-heading">Source Image<span class="d-block"></span></h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- All Service Wrapper-->
+                <div id="imageDiv" class="pricing-table-box wow fadeInUp" data-wow-duration="1.0s" data-wow-delay=".4s">
+                        <img id="sourceImage"/>
+                </div>
+        <!-- All Service Wrapper-->
+
+    </div>
+</section>
+<!-- Our Services Area End -->
+
+<!-- Our Features Area Start -->
+<section id="features" class="features-area service-page-features bg-white">
+
+    <div class="bubble-box">
+        <div class="bubbles-1"></div>
+        <div class="bubbles-2"></div>
+        <div class="bubbles-3"></div>
+        <div class="bubbles-4"></div>
+        <div class="bubbles-5"></div>
+        <div class="bubbles-7"></div>
+    </div>
+
+    <div class="container">
+
+        <div class="row">
+            <div class="col-12">
+                <div class="section-title-area">
+                    <h2 class="section-heading">Response<span class=Response"d-block"></span></h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- All Features Wrapper-->
+        <div class="pricing-details-wrap">
+            <textarea style="border:none;width:100%;height:360px;" id="responseTextArea" class="input"></textarea>
+        </div>
+        <!-- All Features Wrapper-->
+    </div>
+
+</section>
+<!-- Our Features Area End -->
+
+<!-- Footer Start -->
+<footer class="footer-area">
+    <div class="footer-wave"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="footer-newsletter text-center">
+                    <h3>Follow us for further information</h3>
+                    <div class="footer-newsletter-form">
+                        <form>
+                            <div class="form-row">
+                                <div class="form-group m-0">
+                                    <input type="text" class="form-control" placeholder="Enter Your Email">
+                                </div>
+                                <div class="form-group m-0">
+                                    <button type="submit" class="theme-button">Subscribe</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row footer-main-content-area">
+            <div class="col-xl-3 col-lg-3 col-md-3 footer-logo">
+                <figure><a href="index.html"><img src="assets/img/logo.png" alt="Logo"></a></figure>
+                <p>121 King Street, Melbourne Victoria 3000, Australia <a href="tel:880123564"><i class="fas fa-phone-alt"></i>+88 01 23 564</a></p>
+            </div>
+            <div class="col-xl-3 col-lg-3 col-md-3 footer-widget">
+                <h4>Services</h4>
+                <ul class="footer-links-list">
+                    <li><a href="hosting.html">Shared Hosting</a></li>
+                    <li><a href="hosting.html">Reseller Hosting</a></li>
+                    <li><a href="hosting.html">Dedicated Hosting</a></li>
+                    <li><a href="domain.html">Domain</a></li>
+                </ul>
+            </div>
+            <div class="col-xl-3 col-lg-3 col-md-3 footer-widget">
+                <h4>Supports</h4>
+                <ul class="footer-links-list">
+                    <li><a href="#">Support Center</a></li>
+                    <li><a href="#">Submit a Ticket</a></li>
+                    <li><a href="#">Start Your Careers</a></li>
+                    <li><a href="#">Submit your CV</a></li>
+                </ul>
+            </div>
+            <div class="col-xl-3 col-lg-3 col-md-3 footer-widget">
+                <h4>Legals</h4>
+                <ul class="footer-links-list">
+                    <li><a href="#">Terms Of Services</a></li>
+                    <li><a href="#">Acceptable Use Policy</a></li>
+                    <li><a href="login.html">Login</a></li>
+                    <li><a href="registration.html">Register</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="row copyright-are">
+            <div class="col-12">
+                <div class="copyright-text text-center">
+                    <p>Copyright &copy; 2020.Company name All rights reserved.<a target="_blank" href="http://sc.chinaz.com/moban/">&#x7F51;&#x9875;&#x6A21;&#x677F;</a></p>
+
+                    <ul class="footer-social-links d-flex justify-content-center">
+                        <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
+                        <li><a href="#"><i class="fab fa-twitter"></i></a></li>
+                        <li><a href="#"><i class="fab fa-linkedin-in"></i></a></li>
+                        <li><a href="#"><i class="fab fa-instagram"></i></a></li>
+                        <li><a href="#"><i class="fab fa-pinterest-p"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Effect Start-->
+    <img class="bubble slow" src="assets/img/all-effect-img/Top_bubble.svg" id="pink-side-bubble-111" alt="b">
+    <img class="bubble" src="assets/img/all-effect-img/Bottom_Bubble.svg" id="pink-side-bubble-222" alt="b">
+    <img class="bubble slow" src="assets/img/all-effect-img/Bog-Blob.svg" id="blue-side-bubble-111" alt="b">
+    <!-- Effect End-->
+
+</footer>
+<!-- Footer End -->
+
+<!--Go To Top Arrow area start-->
+<div class="top-arrow">
+    <a href="#" id="scroll" style="display: none;"><i class="fas fa-angle-up"></i></a>
+</div>
+<!--Go To Top Arrow area End-->
+
+<!--=======================================
+    All Jquery Script link
+===========================================-->
+
+<!-- Bootstrap core JavaScript -->
+<script src="assets/vendor/jquery/jquery.min.js"></script>
+<script src="assets/vendor/jquery/popper.min.js"></script>
+<script src="assets/vendor/bootstrap/js/bootstrap.min.js"></script>
+
+<!-- ==== Plugin JavaScript ==== -->
+
+<!-- jQuery owl carousel -->
+<script src="assets/js/owl.carousel.min.js"></script>
+
+<script src="assets/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+<!--Input Field Script-->
+<script src="assets/js/input-field.js"></script>
+
+<!--Type Js Script-->
+<script src="assets/js/typed.min.js"></script>
+
+<!--Paroller Script-->
+<script src="assets/js/jquery.paroller.min.js"></script>
+
+<!--WOW JS Script-->
+<script src="assets/js/wow.min.js"></script>
+
+<!--AOS JS Script-->
+<script src="assets/js/aos.js"></script>
+
+<!--WayPoints JS Script-->
+<script src="assets/js/waypoints.min.js"></script>
+
+<!--Counter Up JS Script-->
+<script src="assets/js/jquery.counterup.min.js"></script>
+
+<!--VenoBox Script-->
+<script src="assets/js/venobox.min.js"></script>
+
+<!--Custom Select Script-->
+<script src="assets/js/custom-select.js"></script>
+
+<!--Mean Menu/Mobile Menu Script-->
+<script src="assets/js/jquery.meanmenu.min.js"></script>
+
+<!-- Custom scripts for this template -->
+<script src="assets/js/custom.js"></script>
+
+<script>
+    var typed = new Typed('#typed', {
+        stringsElement: '#typed-strings',
+        typeSpeed: 100,
+        backSpeed: 100,
+        loop: true,
+        smartBackspace: true,
+    });
+</script>
+
+</body>
+
+</html>
